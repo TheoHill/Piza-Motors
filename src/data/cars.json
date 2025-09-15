@@ -1,0 +1,118 @@
+{
+  "cars": [
+    {
+      "id": 1,
+      "name": "Toyota Corolla",
+      "brand": "Toyota",
+      "price": 15500,
+      "year": 2021,
+      "mileage": "20,000 km",
+      "fuelType": "Petrol",
+      "image": "/assets/Toyota_Corola.jpg",
+      "condition": "Used",
+      "category": "sedan"
+    },
+    {
+      "id": 2,
+      "name": "Honda Civic",
+      "brand": "Honda",
+      "price": 17000,
+      "year": 2020,
+      "mileage": "35,000 km",
+      "fuelType": "Petrol",
+      "image": "/assets/Hondacivic.jpg",
+      "condition": "Used",
+      "category": "sedan"
+    },
+    {
+      "id": 3,
+      "name": "BMW 3 Series",
+      "brand": "BMW",
+      "price": 28000,
+      "year": 2019,
+      "mileage": "45,000 km",
+      "fuelType": "Petrol",
+      "image": "/assets/BMW-3.jpg",
+      "condition": "Used",
+      "category": "luxury"
+    },
+    {
+      "id": 4,
+      "name": "Land Rover Discovery",
+      "brand": "Land Rover",
+      "price": 35500,
+      "year": 2020,
+      "mileage": "30,000 km",
+      "fuelType": "Diesel",
+      "image": "/assets/land-rover_discovery.jpg",
+      "condition": "Used",
+      "category": "suv"
+    },
+    {
+      "id": 5,
+      "name": "Mazda Truck",
+      "brand": "Mazda",
+      "price": 22500,
+      "year": 2018,
+      "mileage": "75,000 km",
+      "fuelType": "Diesel",
+      "image": "/assets/MazdaTruck.jpg",
+      "condition": "Used",
+      "category": "truck"
+    },
+    {
+      "id": 6,
+      "name": "Mercedes-Benz GLA",
+      "brand": "Mercedes",
+      "price": 42500,
+      "year": 2021,
+      "mileage": "15,000 km",
+      "fuelType": "Petrol",
+      "image": "/assets/Mercedes.jpg",
+      "condition": "Used",
+      "category": "luxury"
+    }
+  ],
+  "brands": [
+    {
+      "name": "Toyota",
+      "logo": "/assets/Toyota.png",
+      "slug": "toyota"
+    },
+    {
+      "name": "Ford Motor",
+      "logo": "/assets/Ford.png",
+      "slug": "ford"
+    },
+    {
+      "name": "BMW",
+      "logo": "/assets/BMW.png",
+      "slug": "bmw"
+    },
+    {
+      "name": "Volkswagen",
+      "logo": "/assets/Volkswagen.png",
+      "slug": "volkswagen"
+    },
+    {
+      "name": "Mercedes",
+      "logo": "/assets/Mercedes.png",
+      "slug": "mercedes"
+    },
+    {
+      "name": "Chevrolet",
+      "logo": "/assets/Chevrolet.png",
+      "slug": "chevrolet"
+    },
+    {
+      "name": "Hyundai",
+      "logo": "/assets/Hyundai.png",
+      "slug": "hyundai"
+    },
+    {
+      "name": "Nissan",
+      "logo": "/assets/Nissan.png",
+      "slug": "nissan"
+    }
+  ]
+}
