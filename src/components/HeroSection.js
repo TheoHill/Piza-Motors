@@ -122,7 +122,7 @@ export default function HeroSection() {
             >
                 {/* Hero Text & Buttons */}
                 <div className="max-w-2xl mb-8 md:mb-16 md:ml-12 text-center md:text-left">
-                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 text-shadow leading-snug">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 text-shadow leading-snug">
                         Drive Your <br />
                         <span className="text-yellow-400">Dream Car</span> <br />
                         Today
