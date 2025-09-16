@@ -1,4 +1,3 @@
-import Header from '../components/Header'
 import HeroSection from '../components/HeroSection'
 import BrandSection from '../components/BrandSection'
 import CarGrid from '../components/CarGrid'
@@ -8,7 +7,6 @@ import Footer from '../components/Footer'
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <Header />
       <HeroSection />
       <BrandSection />
       <CarGrid />
