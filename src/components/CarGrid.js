@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Heart, Eye } from 'lucide-react'
 import Image from 'next/image'
 import carsData from '../data/cars.json'
+import Link from "next/link"
 
 export default function CarGrid() {
   const [cars, setCars] = useState([])
@@ -61,7 +62,7 @@ export default function CarGrid() {
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                
+
                 {/* Condition Badge */}
                 <div className="absolute top-4 left-4">
                   <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
@@ -73,11 +74,10 @@ export default function CarGrid() {
                 <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => toggleFavorite(car.id)}
-                    className={`p-2 rounded-full transition-colors ${
-                      favorites.has(car.id)
+                    className={`p-2 rounded-full transition-colors ${favorites.has(car.id)
                         ? 'bg-red-500 text-white'
                         : 'bg-white text-gray-600 hover:bg-red-50'
-                    }`}
+                      }`}
                   >
                     <Heart className={`h-4 w-4 ${favorites.has(car.id) ? 'fill-current' : ''}`} />
                   </button>
@@ -91,7 +91,7 @@ export default function CarGrid() {
               <div className="p-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{car.name}</h3>
                 <p className="text-2xl font-bold text-green-600 mb-4">{formatPrice(car.price)}</p>
-                
+
                 {/* Car Details */}
                 <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-6">
                   <div className="flex items-center gap-2">
@@ -131,12 +131,14 @@ export default function CarGrid() {
 
         {/* View More Button */}
         <div className="text-center">
-          <button className="inline-flex items-center text-gray-600 hover:text-yellow-500 font-medium transition-colors">
-            View more
-            <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+          <Link href="/cars" passHref>
+            <button className="inline-flex items-center text-gray-600 hover:text-yellow-500 font-medium transition-colors">
+              View more
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </Link>
         </div>
       </div>
     </section>

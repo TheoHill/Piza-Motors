@@ -1,5 +1,4 @@
 import CarsHero from '../../components/CarsHero'
-import CarsFilter from '../../components/CarsFilter'
 import CarsListing from '../../components/CarsListing'
 import Footer from '../../components/Footer'
 
@@ -13,7 +12,6 @@ export default function CarsPage() {
   return (
     <main className="min-h-screen">
       <CarsHero />
-      <CarsFilter />
       <CarsListing />
       <Footer />
     </main>

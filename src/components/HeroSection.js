@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Search, Menu, X, User } from 'lucide-react'
 import Image from 'next/image'
+import Link from "next/link"
 
 export default function HeroSection() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -35,25 +36,36 @@ export default function HeroSection() {
 
                             {/* Logo */}
                             <div className="flex-shrink-0 flex items-center">
-                                <Image
-                                    src="/assets/PizaLogo.png"
-                                    alt="Piza Motors"
-                                    width={120}
-                                    height={40}
-                                    className="h-12 w-auto"
-                                />
+                                <Link href="/" passHref>
+                                    <Image
+                                        src="/assets/PizaLogo.png"
+                                        alt="Piza Motors"
+                                        width={120}
+                                        height={40}
+                                        className="h-12 w-auto cursor-pointer"
+                                    />
+                                </Link>
                             </div>
 
                             {/* Desktop Navigation */}
                             <nav className="hidden md:flex space-x-8">
-                                {["Home", "Cars", "About", "Contact"].map((link) => (
+                                {[
+                                    { name: "Home", href: "/", active: true },
+                                    { name: "Cars", href: "/cars" },
+                                    { name: "About", href: "/about" },
+                                    { name: "Contact", href: "/contact" }
+                                ].map((link) => (
                                     <a
-                                        key={link}
-                                        href="#"
-                                        className="text-gray-800 hover:text-yellow-500 px-3 py-2 text-sm font-medium transition-colors relative group"
+                                        key={link.name}
+                                        href={link.href}
+                                        className={`px-3 py-2 text-sm font-medium transition-colors relative group ${link.active
+                                            ? 'text-yellow-500'
+                                            : 'text-gray-800 hover:text-yellow-500'
+                                            }`}
                                     >
-                                        {link}
-                                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-500 transition-all duration-300 group-hover:w-full"></span>
+                                        {link.name}
+                                        <span className={`absolute bottom-0 left-0 h-0.5 bg-yellow-500 transition-all duration-300 ${link.active ? 'w-full' : 'w-0 group-hover:w-full'
+                                            }`}></span>
                                     </a>
                                 ))}
                             </nav>
@@ -89,13 +101,21 @@ export default function HeroSection() {
                     {isMenuOpen && (
                         <div className="md:hidden absolute top-20 left-4 right-4 bg-white/50 backdrop-blur-lg rounded-2xl border border-white/20 shadow-xl">
                             <nav className="px-6 py-6 space-y-4">
-                                {["Home", "Cars", "About", "Contact"].map((link) => (
+                                {[
+                                    { name: "Home", href: "/", active: true },
+                                    { name: "Cars", href: "/cars" },
+                                    { name: "About", href: "/about" },
+                                    { name: "Contact", href: "/contact" }
+                                ].map((link) => (
                                     <a
-                                        key={link}
-                                        href="#"
-                                        className="block text-gray-800 hover:text-yellow-500 py-2 text-sm font-medium transition-colors"
+                                        key={link.name}
+                                        href={link.href}
+                                        className={`block py-2 text-sm font-medium transition-colors ${link.active
+                                            ? 'text-yellow-500'
+                                            : 'text-gray-800 hover:text-yellow-500'
+                                            }`}
                                     >
-                                        {link}
+                                        {link.name}
                                     </a>
                                 ))}
                                 <div className="pt-4 border-t border-white/20">
@@ -135,17 +155,22 @@ export default function HeroSection() {
                     </p>
 
                     {/* Action Buttons */}
+                    {/* Action Buttons */}
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-8 md:mb-12 items-center md:items-start md:justify-start justify-center">
-                        <button className="relative px-6 md:px-8 py-2.5 md:py-3 rounded-full font-semibold text-sm md:text-base text-white transition-all group text-center w-[200px] sm:w-auto">
-                            <span className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-r from-yellow-400 to-white opacity-80 group-hover:opacity-100">
-                                <span className="block bg-black/30 backdrop-blur-md rounded-full"></span>
-                            </span>
-                            <span className="relative">Browse Cars</span>
-                        </button>
+                        <Link href="/cars" passHref>
+                            <button className="relative px-6 md:px-8 py-2.5 md:py-3 rounded-full font-semibold text-sm md:text-base text-white transition-all group text-center w-[200px] sm:w-auto">
+                                <span className="absolute inset-0 rounded-full p-[2px] bg-gradient-to-r from-yellow-400 to-white opacity-80 group-hover:opacity-100">
+                                    <span className="block bg-black/30 backdrop-blur-md rounded-full"></span>
+                                </span>
+                                <span className="relative">Browse Cars</span>
+                            </button>
+                        </Link>
 
-                        <button className="bg-white/30 backdrop-blur-lg border border-white/20 hover:bg-white/50 text-white hover:text-black font-semibold px-6 md:px-8 py-2.5 md:py-3 rounded-full transition-colors text-sm md:text-base shadow-lg text-center w-[200px] sm:w-auto">
-                            Contact Us
-                        </button>
+                        <Link href="/contact" passHref>
+                            <button className="bg-white/30 backdrop-blur-lg border border-white/20 hover:bg-white/50 text-white hover:text-black font-semibold px-6 md:px-8 py-2.5 md:py-3 rounded-full transition-colors text-sm md:text-base shadow-lg text-center w-[200px] sm:w-auto">
+                                Contact Us
+                            </button>
+                        </Link>
                     </div>
                 </div>
 
@@ -158,8 +183,8 @@ export default function HeroSection() {
                                 key={filter}
                                 onClick={() => setActiveFilter(filter)}
                                 className={`px-4 md:px-6 py-2 rounded-full font-medium transition-colors text-sm md:text-base ${activeFilter === filter
-                                        ? 'bg-yellow-500 text-black'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-yellow-500 text-black'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 {filter}
