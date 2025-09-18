@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Search, Menu, X, User } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function HeroSection() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -44,17 +45,22 @@ export default function HeroSection() {
                                 />
                             </div>
 
-                            {/* Desktop Navigation */}
+                           {/* Desktop Navigation */}
                             <nav className="hidden md:flex space-x-8">
-                                {["Home", "Cars", "About", "Contact"].map((link) => (
-                                    <a
-                                        key={link}
-                                        href="#"
+                                {[
+                                    { name: "Home", href: "/" },
+                                    { name: "Cars", href: "/cars" },
+                                    { name: "About", href: "#" },
+                                    { name: "Contact", href: "#" }
+                                ].map((link) => (
+                                    <Link
+                                        key={link.name}
+                                        href={link.href}
                                         className="text-gray-800 hover:text-yellow-500 px-3 py-2 text-sm font-medium transition-colors relative group"
                                     >
-                                        {link}
+                                        {link.name}
                                         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-yellow-500 transition-all duration-300 group-hover:w-full"></span>
-                                    </a>
+                                    </Link>
                                 ))}
                             </nav>
 

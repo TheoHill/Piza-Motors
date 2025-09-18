@@ -1,7 +1,9 @@
+// src/components/CarGrid.js - Updated version with link to Cars page
 'use client'
 import { useState, useEffect } from 'react'
 import { Heart, Eye } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import carsData from '../data/cars.json'
 
 export default function CarGrid() {
@@ -129,14 +131,16 @@ export default function CarGrid() {
           ))}
         </div>
 
-        {/* View More Button */}
+        {/* View More Button - Updated to link to Cars page */}
         <div className="text-center">
-          <button className="inline-flex items-center text-gray-600 hover:text-yellow-500 font-medium transition-colors">
-            View more
-            <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+          <Link href="/cars">
+            <button className="inline-flex items-center text-gray-600 hover:text-yellow-500 font-medium transition-colors">
+              View more
+              <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </Link>
         </div>
       </div>
     </section>
