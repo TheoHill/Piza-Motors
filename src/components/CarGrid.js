@@ -81,9 +81,11 @@ export default function CarGrid() {
                   >
                     <Heart className={`h-4 w-4 ${favorites.has(car.id) ? 'fill-current' : ''}`} />
                   </button>
-                  <button className="p-2 bg-white text-gray-600 hover:bg-yellow-50 rounded-full transition-colors">
-                    <Eye className="h-4 w-4" />
-                  </button>
+                  <Link href={`/cars/${car.id}`} passHref>
+                    <button className="p-2 bg-white text-gray-600 hover:bg-yellow-50 rounded-full transition-colors">
+                      <Eye className="h-4 w-4" />
+                    </button>
+                  </Link>
                 </div>
               </div>
 
@@ -121,9 +123,11 @@ export default function CarGrid() {
                 </div>
 
                 {/* View Details Button */}
-                <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition-colors">
-                  View Details
-                </button>
+                <Link href={`/cars/${car.id}`} passHref>
+                  <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition-colors">
+                    View Details
+                  </button>
+                </Link>
               </div>
             </div>
           ))}
