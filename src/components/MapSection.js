@@ -66,22 +66,7 @@ export default function MapSection() {
               </button>
             </div>
 
-            <div className="bg-gray-50 p-6 rounded-xl">
-              <h3 className="text-lg font-bold text-gray-900 mb-3">Parking</h3>
-              <p className="text-gray-600">
-                Free parking available on-site for all customers and visitors. 
-                Secure and well-lit parking area.
-              </p>
-            </div>
 
-            <div className="bg-gray-50 p-6 rounded-xl">
-              <h3 className="text-lg font-bold text-gray-900 mb-3">Nearby Landmarks</h3>
-              <ul className="text-gray-600 space-y-1">
-                <li>• Mzuzu City Center</li>
-                <li>• Mzuzu University</li>
-                <li>• Central Market</li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>

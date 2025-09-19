@@ -127,20 +127,19 @@ export default function CarsHero() {
                 </div>
             </div>
 
-            {/* Hero Content */}
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center text-center h-full pb-12 sm:pb-0">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow">
-                    Find Your
-                </h1>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow">
-                    <span className="text-yellow-400">Perfect</span> Ride
-                </h2>
-                <p className="text-lg md:text-xl text-gray-200 mb-8 text-shadow max-w-2xl">
-                    Browse through our extensive collection of quality vehicles.
-                    From luxury cars to everyday drives, find exactly what you're looking for.
-                </p>
-            </div>
+        
 
+             <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 transform translate-y-10 md:translate-y-12">
+                <div className="max-w-3xl w-full">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow">
+                        Find Your <br/> <span className="text-yellow-400">Perfect</span> Ride
+                    </h1>
+                    <p className="text-lg md:text-xl text-gray-200 mb-8 text-shadow max-w-2xl mx-auto">
+                        Browse through our extensive collection of quality vehicles.
+                    From luxury cars to everyday drives, find exactly what you're looking for.
+                    </p>
+                </div>
+            </div>
         </section>
     )
 }
