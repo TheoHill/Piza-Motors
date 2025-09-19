@@ -1,11 +1,17 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Search, Plus, Minus, X } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 import carsData from '../data/cars.json'
 
 export default function CarsFilter({ onFilterChange, initialFilters = {} }) {
+  const searchParams = useSearchParams()
+  
+  // Get brand from URL parameters
+  const brandFromUrl = searchParams.get('brand')
+  
   const [filters, setFilters] = useState({
-    brand: [],
+    brand: brandFromUrl ? [brandFromUrl] : [],
     priceRange: { min: '', max: '' },
     buildYear: { min: '', max: '' },
     bodyType: [],
@@ -58,6 +64,16 @@ export default function CarsFilter({ onFilterChange, initialFilters = {} }) {
       prices: { min: Math.min(...prices), max: Math.max(...prices) }
     })
   }, [])
+
+  // Update filters when URL parameters change
+  useEffect(() => {
+    if (brandFromUrl) {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        brand: [brandFromUrl]
+      }))
+    }
+  }, [brandFromUrl])
 
   useEffect(() => {
     // Call parent's filter change handler whenever filters change

@@ -1,26 +1,43 @@
+// src/components/ContactHero.js
 'use client'
 import { useState } from 'react'
 import { Search, Menu, X, User } from 'lucide-react'
 import Image from 'next/image'
+import Link from "next/link"
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function ContactHero() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const currentSearch = searchParams.get('search') || ''
+
+    const handleNavSearch = (e) => {
+        e.preventDefault()
+        const formData = new FormData(e.target)
+        const searchQuery = formData.get('search')
+        if (searchQuery?.trim()) {
+            router.push(`/cars?search=${encodeURIComponent(searchQuery.trim())}`)
+        } else {
+            router.push('/cars')
+        }
+    }
 
     return (
-        <section className="relative h-[400px] md:h-[500px] overflow-hidden">
+        <section className="relative h-[400px] md:h-[500px] overflow-visible mb-16">
             {/* Background Image */}
             <div className="absolute inset-0">
                 <Image
-                    src="/assets/contactheader.jpg"
+                    src="/assets/header.jpg"
                     alt="Contact Piza Motors"
                     fill
                     className="object-cover"
                     priority
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+                <div className="absolute inset-0 bg-black bg-opacity-50"></div>
             </div>
 
-            {/* Navigation */}
+            {/* Integrated Navigation - Glassmorphism NavBar */}
             <div className="relative z-50 py-6">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="bg-white/60 backdrop-blur-lg rounded-full shadow-lg border border-white/20">
@@ -28,13 +45,15 @@ export default function ContactHero() {
 
                             {/* Logo */}
                             <div className="flex-shrink-0 flex items-center">
-                                <Image
-                                    src="/assets/PizaLogo.png"
-                                    alt="Piza Motors"
-                                    width={120}
-                                    height={40}
-                                    className="h-12 w-auto"
-                                />
+                                <Link href="/" passHref>
+                                    <Image
+                                        src="/assets/PizaLogo.png"
+                                        alt="Piza Motors"
+                                        width={120}
+                                        height={40}
+                                        className="h-12 w-auto cursor-pointer"
+                                    />
+                                </Link>
                             </div>
 
                             {/* Desktop Navigation */}
@@ -62,14 +81,18 @@ export default function ContactHero() {
 
                             {/* Search + Profile */}
                             <div className="hidden md:flex items-center space-x-4">
-                                <div className="relative">
+                                <form onSubmit={handleNavSearch} className="relative">
                                     <input
                                         type="text"
-                                        placeholder="Search..."
+                                        name="search"
+                                        placeholder="Search cars..."
+                                        defaultValue={currentSearch}
                                         className="bg-white/60 backdrop-blur-md border border-white/30 placeholder-gray-500 text-gray-800 rounded-full px-4 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:bg-white/70 w-48 transition-all"
                                     />
-                                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-                                </div>
+                                    <button type="submit" className="absolute left-3 top-2.5">
+                                        <Search className="h-4 w-4 text-gray-500" />
+                                    </button>
+                                </form>
                                 <button className="p-2 text-gray-800 hover:text-yellow-500 transition-colors rounded-full hover:bg-white/40 backdrop-blur-md">
                                     <User className="h-5 w-5" />
                                 </button>
@@ -109,14 +132,18 @@ export default function ContactHero() {
                                     </a>
                                 ))}
                                 <div className="pt-4 border-t border-white/20">
-                                    <div className="relative">
+                                    <form onSubmit={handleNavSearch} className="relative">
                                         <input
                                             type="text"
-                                            placeholder="Search..."
+                                            name="search"
+                                            placeholder="Search cars..."
+                                            defaultValue={currentSearch}
                                             className="bg-white/40 backdrop-blur-md border border-white/30 rounded-full px-4 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full text-gray-800 placeholder-gray-500"
                                         />
-                                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-                                    </div>
+                                        <button type="submit" className="absolute left-3 top-2.5">
+                                            <Search className="h-4 w-4 text-gray-500" />
+                                        </button>
+                                    </form>
                                 </div>
                             </nav>
                         </div>
@@ -124,19 +151,19 @@ export default function ContactHero() {
                 </div>
             </div>
 
-            {/* Hero Content (overlay, centered) */}
-            <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 transform translate-y-10 md:translate-y-12">
-                <div className="max-w-3xl w-full">
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow">
-                        Get In <span className="text-yellow-400">Touch</span>
+            {/* Hero Content */}
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center h-full">
+                <div className="text-center">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow leading-snug">
+                        Get in
+                        <span className="text-yellow-400 block">Touch</span>
                     </h1>
+                    
                     <p className="text-lg md:text-xl text-gray-200 mb-8 text-shadow max-w-2xl mx-auto">
-                        Ready to find your perfect car? Have questions about our services?
-                        We're here to help and would love to hear from you.
+                        Have questions or ready to find your dream car? Our expert team is here to help you every step of the way.
                     </p>
                 </div>
             </div>
-
         </section>
     )
 }

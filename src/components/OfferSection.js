@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function OfferSection() {
   return (
@@ -33,9 +34,11 @@ export default function OfferSection() {
                 </div>
               </div>
 
+              <Link href="/cars" passHref>
               <button className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-8 py-3 rounded-lg transition-colors">
                 Shop Now
               </button>
+              </Link>
             </div>
 
             {/* Image Side */}
