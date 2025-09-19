@@ -31,15 +31,12 @@ export default function CarDetailsView({ carId }) {
     // Find the car by ID
     const foundCar = carsData.cars.find(c => c.id === parseInt(carId))
     if (foundCar) {
-      // Add multiple images for demonstration
+      // Use the images from JSON data, fallback to single image if images array doesn't exist
       const carWithImages = {
         ...foundCar,
-        images: [
-          foundCar.image,
-          foundCar.image, // In real app, these would be different images
-          foundCar.image,
-          foundCar.image
-        ]
+        images: foundCar.images && foundCar.images.length > 0 
+          ? foundCar.images 
+          : [foundCar.image, foundCar.image, foundCar.image, foundCar.image] // fallback for backwards compatibility
       }
       
       // Add specifications separately to avoid serialization issues

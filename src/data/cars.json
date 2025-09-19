@@ -9,6 +9,13 @@
       "mileage": "20,000 km",
       "fuelType": "Petrol",
       "image": "/assets/Toyota_Corola.jpg",
+      "images": [
+        "/assets/Toyota_Corola.jpg",
+        "/assets/toyota_corolla_interior.jpg",
+        "/assets/toyota_corolla_side.jpg",
+        "/assets/toyota_corolla_back.jpg",
+        "/assets/toyota_corolla_dashboard.jpg"
+      ],
       "condition": "Used",
       "category": "sedan"
     },
@@ -21,6 +28,13 @@
       "mileage": "35,000 km",
       "fuelType": "Petrol",
       "image": "/assets/Hondacivic.jpg",
+      "images": [
+        "/assets/Hondacivic.jpg",
+        "/assets/honda_civic_interior.jpg",
+        "/assets/honda_civic_side.jpg",
+        "/assets/honda_civic_back.jpg",
+        "/assets/honda_civic_engine.jpg"
+      ],
       "condition": "Used",
       "category": "sedan"
     },
@@ -33,6 +47,13 @@
       "mileage": "45,000 km",
       "fuelType": "Petrol",
       "image": "/assets/BMW-3.jpg",
+      "images": [
+        "/assets/BMW-3.jpg",
+        "/assets/bmw_3_interior.jpg",
+        "/assets/bmw_3_side.jpg",
+        "/assets/bmw_3_back.jpg",
+        "/assets/bmw_3_dashboard.jpg"
+      ],
       "condition": "Used",
       "category": "luxury"
     },
@@ -45,6 +66,13 @@
       "mileage": "30,000 km",
       "fuelType": "Diesel",
       "image": "/assets/land-rover_discovery.jpg",
+      "images": [
+        "/assets/land-rover_discovery.jpg",
+        "/assets/land_rover_interior.jpg",
+        "/assets/land_rover_side.jpg",
+        "/assets/land_rover_back.jpg",
+        "/assets/land_rover_dashboard.jpg"
+      ],
       "condition": "Used",
       "category": "suv"
     },
@@ -57,6 +85,13 @@
       "mileage": "75,000 km",
       "fuelType": "Diesel",
       "image": "/assets/MazdaTruck.jpg",
+      "images": [
+        "/assets/MazdaTruck.jpg",
+        "/assets/mazda_truck_interior.jpg",
+        "/assets/mazda_truck_side.jpg",
+        "/assets/mazda_truck_back.jpg",
+        "/assets/mazda_truck_bed.jpg"
+      ],
       "condition": "Used",
       "category": "truck"
     },
@@ -69,6 +104,13 @@
       "mileage": "15,000 km",
       "fuelType": "Petrol",
       "image": "/assets/Mercedes.jpg",
+      "images": [
+        "/assets/Mercedes.jpg",
+        "/assets/mercedes_gla_interior.jpg",
+        "/assets/mercedes_gla_side.jpg",
+        "/assets/mercedes_gla_back.jpg",
+        "/assets/mercedes_gla_dashboard.jpg"
+      ],
       "condition": "Used",
       "category": "luxury"
     }
