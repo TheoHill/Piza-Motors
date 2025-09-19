@@ -23,7 +23,7 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <MapPin className="h-5 w-5 text-yellow-500" />
-                <span className="text-black">Mzuzu, Malawi</span>
+                <span className="text-black">Mzimba, Malawi</span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-yellow-500" />
@@ -41,10 +41,10 @@ export default function Footer() {
             <h3 className="text-yellow-500 font-semibold text-lg mb-4">PAGES</h3>
             <ul className="space-y-3">
               <li><a href="#" className="text-black hover:text-yellow-500 transition-colors">Home</a></li>
-              <li><a href="#" className="text-black hover:text-yellow-500 transition-colors">Cars</a></li>
-              <li><a href="#" className="text-black hover:text-yellow-500 transition-colors">About</a></li>
-              <li><a href="#" className="text-black hover:text-yellow-500 transition-colors">Contact Us</a></li>
-              <li><a href="#" className="text-black hover:text-yellow-500 transition-colors">Privacy Policy</a></li>
+              <li><a href="/cars" className="text-black hover:text-yellow-500 transition-colors">Cars</a></li>
+              <li><a href="/about" className="text-black hover:text-yellow-500 transition-colors">About</a></li>
+              <li><a href="/contact" className="text-black hover:text-yellow-500 transition-colors">Contact Us</a></li>
+              <li><a href="privacy" className="text-black hover:text-yellow-500 transition-colors">Privacy Policy</a></li>
             </ul>
           </div>
 
