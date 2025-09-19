@@ -3,16 +3,21 @@ import { useState, useEffect } from 'react'
 import { Heart, Eye, Gauge, Calendar, Fuel, Settings, Search, Filter, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import carsData from '../data/cars.json'
 import CarsFilter from './CarsFilter'
 
 export default function CarsListing() {
-  const [cars, setCars] = useState([])
+  const [allCars, setAllCars] = useState([])
+  const [filteredCars, setFilteredCars] = useState([])
   const [favorites, setFavorites] = useState(new Set())
   const [currentPage, setCurrentPage] = useState(1)
   const [sortBy, setSortBy] = useState('newest')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
   const carsPerPage = 6
+  
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     // Duplicate cars data to have more items for demonstration
@@ -21,8 +26,91 @@ export default function CarsListing() {
       id: car.id + 100,
       name: car.name + ' Premium'
     }))]
-    setCars(extendedCars)
-  }, [])
+    setAllCars(extendedCars)
+    setFilteredCars(extendedCars)
+
+    // Check for search query from URL parameters
+    const query = searchParams.get('search')
+    if (query) {
+      setSearchTerm(query)
+      performSearch(query, extendedCars)
+    }
+  }, [searchParams])
+
+  const performSearch = (query, carsToSearch = allCars) => {
+  if (!query.trim()) {
+    setFilteredCars(carsToSearch)
+    return
+  }
+
+  // Normalize query:
+  // - remove $ and commas
+  // - turn "15,500 - 18,000" → "15500-18000"
+  const normalizedQuery = query
+    .toLowerCase()
+    .replace(/\$/g, '')
+    .replace(/,/g, '')
+    .replace(/\s*-\s*/g, '-') // clean up dash with spaces
+
+  const searchTokens = normalizedQuery.trim().split(/\s+/)
+
+  let minPrice = null
+  let maxPrice = null
+
+  const otherTokens = searchTokens.filter(token => {
+    const rangeMatch = token.match(/^(\d+)-(\d+)$/)
+    if (rangeMatch) {
+      minPrice = parseInt(rangeMatch[1], 10)
+      maxPrice = parseInt(rangeMatch[2], 10)
+      return false
+    }
+    return true
+  })
+
+  const filtered = carsToSearch.filter(car => {
+    const carString = `
+      ${car.name} 
+      ${car.brand} 
+      ${car.year} 
+      ${car.fuelType} 
+      ${car.condition} 
+      ${car.category || ''} 
+      ${car.price} 
+    `.toLowerCase()
+
+    const matchesText = otherTokens.every(token => carString.includes(token))
+
+    const matchesPrice =
+      minPrice === null || maxPrice === null
+        ? true
+        : car.price >= minPrice && car.price <= maxPrice
+
+    return matchesText && matchesPrice
+  })
+
+  setFilteredCars(filtered)
+  setCurrentPage(1)
+}
+
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    performSearch(searchTerm)
+  }
+
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value
+    setSearchTerm(value)
+    
+    // Perform real-time search as user types
+    performSearch(value)
+  }
+
+  const clearSearch = () => {
+    setSearchTerm('')
+    setFilteredCars(allCars)
+    setCurrentPage(1)
+  }
 
   const toggleFavorite = (carId) => {
     const newFavorites = new Set(favorites)
@@ -42,11 +130,46 @@ export default function CarsListing() {
     }).format(price)
   }
 
+  const handleSort = (sortValue) => {
+    setSortBy(sortValue)
+    let sortedCars = [...filteredCars]
+    
+    switch (sortValue) {
+      case 'price-low':
+        sortedCars.sort((a, b) => a.price - b.price)
+        break
+      case 'price-high':
+        sortedCars.sort((a, b) => b.price - a.price)
+        break
+      case 'year-new':
+        sortedCars.sort((a, b) => b.year - a.year)
+        break
+      case 'year-old':
+        sortedCars.sort((a, b) => a.year - b.year)
+        break
+      case 'mileage':
+        sortedCars.sort((a, b) => {
+          const aMileage = parseInt(a.mileage.replace(/[^\d]/g, ''))
+          const bMileage = parseInt(b.mileage.replace(/[^\d]/g, ''))
+          return aMileage - bMileage
+        })
+        break
+      case 'brand':
+        sortedCars.sort((a, b) => a.brand.localeCompare(b.brand))
+        break
+      default: // newest
+        sortedCars.sort((a, b) => b.year - a.year)
+    }
+    
+    setFilteredCars(sortedCars)
+    setCurrentPage(1)
+  }
+
   // Pagination
   const indexOfLastCar = currentPage * carsPerPage
   const indexOfFirstCar = indexOfLastCar - carsPerPage
-  const currentCars = cars.slice(indexOfFirstCar, indexOfLastCar)
-  const totalPages = Math.ceil(cars.length / carsPerPage)
+  const currentCars = filteredCars.slice(indexOfFirstCar, indexOfLastCar)
+  const totalPages = Math.ceil(filteredCars.length / carsPerPage)
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
@@ -80,11 +203,43 @@ export default function CarsListing() {
 
           {/* Main Content */}
           <div className="flex-1">
+            {/* Search Bar */}
+            <div className="mb-6 bg-white rounded-lg shadow-sm p-4">
+              <form onSubmit={handleSearch} className="flex gap-4">
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    placeholder="Search by car name, brand, year, fuel type..."
+                    value={searchTerm}
+                    onChange={handleSearchInputChange}
+                    className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                  />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  {searchTerm && (
+                    <button
+                      type="button"
+                      onClick={clearSearch}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <Search className="h-5 w-5" />
+                  Search
+                </button>
+              </form>
+            </div>
+
             {/* Mobile Filter Toggle */}
             <div className="lg:hidden mb-6">
               <button 
                 onClick={() => setIsFilterOpen(true)}
-                className="flex items-center justify-center w-full bg-yellow-500 hover:bg-yellow-600 text-black font-semibold py-3 rounded-lg transition-colors"
+                className="flex items-center justify-center w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-lg transition-colors"
               >
                 <Filter className="h-5 w-5 mr-2" />
                 Show Filters
@@ -95,11 +250,20 @@ export default function CarsListing() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                  Available Cars
+                  {searchTerm ? `Search Results for "${searchTerm}"` : 'Available Cars'}
                 </h2>
                 <p className="text-gray-600">
-                  Showing {indexOfFirstCar + 1}-{Math.min(indexOfLastCar, cars.length)} of {cars.length} results
+                  Showing {indexOfFirstCar + 1}-{Math.min(indexOfLastCar, filteredCars.length)} of {filteredCars.length} results
                 </p>
+                {searchTerm && filteredCars.length > 0 && (
+                  <button
+                    onClick={clearSearch}
+                    className="text-yellow-500 hover:text-yellow-600 text-sm mt-1 inline-flex items-center gap-1"
+                  >
+                    <X className="h-4 w-4" />
+                    Clear search
+                  </button>
+                )}
               </div>
 
               {/* Sort Dropdown */}
@@ -107,13 +271,16 @@ export default function CarsListing() {
                 <label className="text-sm text-gray-600">Sort by:</label>
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
+                  onChange={(e) => handleSort(e.target.value)}
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm bg-white"
                 >
                   <option value="newest">Newest First</option>
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
+                  <option value="year-new">Year: Newest</option>
+                  <option value="year-old">Year: Oldest</option>
                   <option value="mileage">Lowest Mileage</option>
+                  <option value="brand">Brand A-Z</option>
                 </select>
               </div>
             </div>
@@ -252,13 +419,28 @@ export default function CarsListing() {
             )}
 
             {/* No Results Message */}
-            {cars.length === 0 && (
+            {filteredCars.length === 0 && (
               <div className="text-center py-16">
                 <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                   <Search className="h-12 w-12 text-gray-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No cars found</h3>
-                <p className="text-gray-600">Try adjusting your filters to see more results.</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  {searchTerm ? `No cars found for "${searchTerm}"` : 'No cars found'}
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  {searchTerm 
+                    ? 'Try searching with different keywords or check your spelling.' 
+                    : 'Try adjusting your filters to see more results.'
+                  }
+                </p>
+                {searchTerm && (
+                  <button
+                    onClick={clearSearch}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-2 rounded-lg transition-colors"
+                  >
+                    Show All Cars
+                  </button>
+                )}
               </div>
             )}
           </div>

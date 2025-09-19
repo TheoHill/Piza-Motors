@@ -3,16 +3,44 @@ import { useState } from 'react'
 import { Search, Menu, X, User } from 'lucide-react'
 import Image from 'next/image'
 import Link from "next/link"
+import { useRouter } from 'next/navigation'
 
 export default function HeroSection() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [activeFilter, setActiveFilter] = useState('All')
     const [filters, setFilters] = useState({
         brand: 'Toyota',
-        model: 'Corolla XSE',
         year: '2021',
         priceRange: '$15,500 - $18,000'
     })
+    const router = useRouter()
+
+    const handleNavSearch = (e) => {
+        e.preventDefault()
+        const formData = new FormData(e.target)
+        const searchQuery = formData.get('search')
+        if (searchQuery?.trim()) {
+            router.push(`/cars?search=${encodeURIComponent(searchQuery.trim())}`)
+        } else {
+            router.push('/cars')
+        }
+    }
+
+    const handleFilterSearch = () => {
+        const searchTerms = []
+        
+        if (filters.brand) searchTerms.push(filters.brand)
+        if (filters.year) searchTerms.push(filters.year)
+        if (filters.priceRange) searchTerms.push(filters.priceRange)
+        
+        const searchQuery = searchTerms.join(' ')
+        
+        if (searchQuery.trim()) {
+            router.push(`/cars?search=${encodeURIComponent(searchQuery.trim())}`)
+        } else {
+            router.push('/cars')
+        }
+    }
 
     return (
         <section className="relative h-[600px] md:h-[700px] overflow-visible mb-32 md:mb-40">
@@ -72,14 +100,17 @@ export default function HeroSection() {
 
                             {/* Search + Profile */}
                             <div className="hidden md:flex items-center space-x-4">
-                                <div className="relative">
+                                <form onSubmit={handleNavSearch} className="relative">
                                     <input
                                         type="text"
-                                        placeholder="Search..."
+                                        name="search"
+                                        placeholder="Search cars..."
                                         className="bg-white/60 backdrop-blur-md border border-white/30 placeholder-gray-500 text-gray-800 rounded-full px-4 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:bg-white/70 w-48 transition-all"
                                     />
-                                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-                                </div>
+                                    <button type="submit" className="absolute left-3 top-2.5">
+                                        <Search className="h-4 w-4 text-gray-500" />
+                                    </button>
+                                </form>
                                 <button className="p-2 text-gray-800 hover:text-yellow-500 transition-colors rounded-full hover:bg-white/40 backdrop-blur-md">
                                     <User className="h-5 w-5" />
                                 </button>
@@ -119,14 +150,17 @@ export default function HeroSection() {
                                     </a>
                                 ))}
                                 <div className="pt-4 border-t border-white/20">
-                                    <div className="relative">
+                                    <form onSubmit={handleNavSearch} className="relative">
                                         <input
                                             type="text"
-                                            placeholder="Search..."
+                                            name="search"
+                                            placeholder="Search cars..."
                                             className="bg-white/40 backdrop-blur-md border border-white/30 rounded-full px-4 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full text-gray-800 placeholder-gray-500"
                                         />
-                                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
-                                    </div>
+                                        <button type="submit" className="absolute left-3 top-2.5">
+                                            <Search className="h-4 w-4 text-gray-500" />
+                                        </button>
+                                    </form>
                                 </div>
                             </nav>
                         </div>
@@ -154,7 +188,6 @@ export default function HeroSection() {
                         with Piza Motors
                     </p>
 
-                    {/* Action Buttons */}
                     {/* Action Buttons */}
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-8 md:mb-12 items-center md:items-start md:justify-start justify-center">
                         <Link href="/cars" passHref>
@@ -193,7 +226,7 @@ export default function HeroSection() {
                     </div>
 
                     {/* Filter Options */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
                         <div>
                             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Brands</label>
                             <select
@@ -206,20 +239,6 @@ export default function HeroSection() {
                                 <option>BMW</option>
                                 <option>Mercedes</option>
                                 <option>Ford</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Models</label>
-                            <select
-                                value={filters.model}
-                                onChange={(e) => setFilters({ ...filters, model: e.target.value })}
-                                className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm md:text-base"
-                            >
-                                <option>Corolla XSE</option>
-                                <option>Civic</option>
-                                <option>3 Series</option>
-                                <option>GLA</option>
                             </select>
                         </div>
 
@@ -244,7 +263,7 @@ export default function HeroSection() {
                                 onChange={(e) => setFilters({ ...filters, priceRange: e.target.value })}
                                 className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-sm md:text-base"
                             >
-                                <option>$15,500 - $18,000</option>
+                                <option>$0 - $20,000</option>
                                 <option>$20,000 - $30,000</option>
                                 <option>$30,000 - $50,000</option>
                                 <option>$50,000+</option>
@@ -253,7 +272,10 @@ export default function HeroSection() {
                     </div>
 
                     {/* Search Button */}
-                    <button className="sm:w-auto w-auto bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 md:px-8 py-2.5 md:py-3 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm md:text-base min-w-[150px] mx-auto">
+                    <button 
+                        onClick={handleFilterSearch}
+                        className="sm:w-auto w-auto bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 md:px-8 py-2.5 md:py-3 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm md:text-base min-w-[150px] mx-auto"
+                    >
                         <Search className="h-5 w-5" />
                         Search Now
                     </button>
