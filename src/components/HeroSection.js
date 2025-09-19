@@ -11,7 +11,7 @@ export default function HeroSection() {
     const [filters, setFilters] = useState({
         brand: 'Toyota',
         year: '2021',
-        priceRange: '$15,500 - $18,000'
+        priceRange: '$0 - $20,000'
     })
     const router = useRouter()
 

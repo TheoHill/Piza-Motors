@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Heart, Eye, Gauge, Calendar, Fuel, Settings, Search, Filter, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -15,6 +15,7 @@ export default function CarsListing() {
   const [sortBy, setSortBy] = useState('newest')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [activeFilters, setActiveFilters] = useState({})
   const carsPerPage = 6
   
   const searchParams = useSearchParams()
@@ -37,61 +38,119 @@ export default function CarsListing() {
     }
   }, [searchParams])
 
-  const performSearch = (query, carsToSearch = allCars) => {
-  if (!query.trim()) {
-    setFilteredCars(carsToSearch)
-    return
-  }
+  const applyFilters = useCallback((cars, filters, search) => {
+    let filtered = [...cars]
 
-  // Normalize query:
-  // - remove $ and commas
-  // - turn "15,500 - 18,000" → "15500-18000"
-  const normalizedQuery = query
-    .toLowerCase()
-    .replace(/\$/g, '')
-    .replace(/,/g, '')
-    .replace(/\s*-\s*/g, '-') // clean up dash with spaces
+    // Apply search filter
+    if (search && search.trim()) {
+      const normalizedQuery = search
+        .toLowerCase()
+        .replace(/\$/g, '')
+        .replace(/,/g, '')
+        .replace(/\s*-\s*/g, '-')
 
-  const searchTokens = normalizedQuery.trim().split(/\s+/)
+      const searchTokens = normalizedQuery.trim().split(/\s+/)
+      let minPrice = null
+      let maxPrice = null
 
-  let minPrice = null
-  let maxPrice = null
+      const otherTokens = searchTokens.filter(token => {
+        const rangeMatch = token.match(/^(\d+)-(\d+)$/)
+        if (rangeMatch) {
+          minPrice = parseInt(rangeMatch[1], 10)
+          maxPrice = parseInt(rangeMatch[2], 10)
+          return false
+        }
+        return true
+      })
 
-  const otherTokens = searchTokens.filter(token => {
-    const rangeMatch = token.match(/^(\d+)-(\d+)$/)
-    if (rangeMatch) {
-      minPrice = parseInt(rangeMatch[1], 10)
-      maxPrice = parseInt(rangeMatch[2], 10)
-      return false
+      filtered = filtered.filter(car => {
+        const carString = `
+          ${car.name} 
+          ${car.brand} 
+          ${car.year} 
+          ${car.fuelType} 
+          ${car.condition} 
+          ${car.category || ''} 
+          ${car.price} 
+        `.toLowerCase()
+
+        const matchesText = otherTokens.every(token => carString.includes(token))
+        const matchesPrice = minPrice === null || maxPrice === null
+          ? true
+          : car.price >= minPrice && car.price <= maxPrice
+
+        return matchesText && matchesPrice
+      })
     }
-    return true
-  })
 
-  const filtered = carsToSearch.filter(car => {
-    const carString = `
-      ${car.name} 
-      ${car.brand} 
-      ${car.year} 
-      ${car.fuelType} 
-      ${car.condition} 
-      ${car.category || ''} 
-      ${car.price} 
-    `.toLowerCase()
+    // Apply brand filter
+    if (filters.brand && filters.brand.length > 0) {
+      filtered = filtered.filter(car => filters.brand.includes(car.brand))
+    }
 
-    const matchesText = otherTokens.every(token => carString.includes(token))
+    // Apply price range filter
+    if (filters.priceRange) {
+      if (filters.priceRange.min !== '' && filters.priceRange.min !== null) {
+        filtered = filtered.filter(car => car.price >= filters.priceRange.min)
+      }
+      if (filters.priceRange.max !== '' && filters.priceRange.max !== null) {
+        filtered = filtered.filter(car => car.price <= filters.priceRange.max)
+      }
+    }
 
-    const matchesPrice =
-      minPrice === null || maxPrice === null
-        ? true
-        : car.price >= minPrice && car.price <= maxPrice
+    // Apply year filter
+    if (filters.buildYear) {
+      if (filters.buildYear.min !== '' && filters.buildYear.min !== null) {
+        filtered = filtered.filter(car => car.year >= filters.buildYear.min)
+      }
+      if (filters.buildYear.max !== '' && filters.buildYear.max !== null) {
+        filtered = filtered.filter(car => car.year <= filters.buildYear.max)
+      }
+    }
 
-    return matchesText && matchesPrice
-  })
+    // Apply body type filter
+    if (filters.bodyType && filters.bodyType.length > 0) {
+      filtered = filtered.filter(car => 
+        filters.bodyType.includes(car.category) || 
+        filters.bodyType.includes('Sedan') // fallback for cars without category
+      )
+    }
 
-  setFilteredCars(filtered)
-  setCurrentPage(1)
-}
+    // Apply fuel type filter
+    if (filters.fuelType && filters.fuelType.length > 0) {
+      filtered = filtered.filter(car => filters.fuelType.includes(car.fuelType))
+    }
 
+    // Apply condition filter
+    if (filters.condition && filters.condition.length > 0) {
+      filtered = filtered.filter(car => filters.condition.includes(car.condition))
+    }
+
+    // Apply transmission filter (assuming we add this to car data)
+    if (filters.transmission && filters.transmission.length > 0) {
+      // For demonstration, randomly assign transmissions since they're not in the JSON
+      filtered = filtered.filter(car => {
+        const transmissionTypes = ['Automatic', 'Manual', 'CVT']
+        const carTransmission = transmissionTypes[car.id % 3]
+        return filters.transmission.includes(carTransmission)
+      })
+    }
+
+    return filtered
+  }, [])
+
+  const handleFilterChange = useCallback((filters) => {
+    setActiveFilters(filters)
+    const filtered = applyFilters(allCars, filters, searchTerm)
+    setFilteredCars(filtered)
+    setCurrentPage(1)
+  }, [allCars, searchTerm, applyFilters])
+
+  const performSearch = (query, carsToSearch = allCars) => {
+    const filtered = applyFilters(carsToSearch, activeFilters, query)
+    setFilteredCars(filtered)
+    setCurrentPage(1)
+  }
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -101,14 +160,13 @@ export default function CarsListing() {
   const handleSearchInputChange = (e) => {
     const value = e.target.value
     setSearchTerm(value)
-    
-    // Perform real-time search as user types
     performSearch(value)
   }
 
   const clearSearch = () => {
     setSearchTerm('')
-    setFilteredCars(allCars)
+    const filtered = applyFilters(allCars, activeFilters, '')
+    setFilteredCars(filtered)
     setCurrentPage(1)
   }
 
@@ -165,6 +223,19 @@ export default function CarsListing() {
     setCurrentPage(1)
   }
 
+  // Get active filter count for display
+  const getActiveFilterCount = () => {
+    let count = 0
+    if (activeFilters.brand && activeFilters.brand.length > 0) count += activeFilters.brand.length
+    if (activeFilters.priceRange && (activeFilters.priceRange.min || activeFilters.priceRange.max)) count += 1
+    if (activeFilters.buildYear && (activeFilters.buildYear.min || activeFilters.buildYear.max)) count += 1
+    if (activeFilters.bodyType && activeFilters.bodyType.length > 0) count += activeFilters.bodyType.length
+    if (activeFilters.transmission && activeFilters.transmission.length > 0) count += activeFilters.transmission.length
+    if (activeFilters.fuelType && activeFilters.fuelType.length > 0) count += activeFilters.fuelType.length
+    if (activeFilters.condition && activeFilters.condition.length > 0) count += activeFilters.condition.length
+    return count
+  }
+
   // Pagination
   const indexOfLastCar = currentPage * carsPerPage
   const indexOfFirstCar = indexOfLastCar - carsPerPage
@@ -180,23 +251,25 @@ export default function CarsListing() {
         <div className="flex gap-8">
           {/* Sidebar Filter - Desktop */}
           <div className="hidden lg:block flex-shrink-0">
-            <CarsFilter />
+            <CarsFilter onFilterChange={handleFilterChange} />
           </div>
 
           {/* Mobile Filter - Overlay */}
           {isFilterOpen && (
             <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setIsFilterOpen(false)}>
-              <div className="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-white p-4 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Filters</h3>
-                  <button 
-                    onClick={() => setIsFilterOpen(false)}
-                    className="p-2 hover:bg-gray-100 rounded-lg"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
+              <div className="absolute left-0 top-0 h-full w-80 max-w-[80vw] bg-white overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                <div className="p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold">Filters</h3>
+                    <button 
+                      onClick={() => setIsFilterOpen(false)}
+                      className="p-2 hover:bg-gray-100 rounded-lg"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <CarsFilter onFilterChange={handleFilterChange} />
                 </div>
-                <CarsFilter />
               </div>
             </div>
           )}
@@ -239,12 +312,138 @@ export default function CarsListing() {
             <div className="lg:hidden mb-6">
               <button 
                 onClick={() => setIsFilterOpen(true)}
-                className="flex items-center justify-center w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-lg transition-colors"
+                className="flex items-center justify-center w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-lg transition-colors relative"
               >
                 <Filter className="h-5 w-5 mr-2" />
                 Show Filters
+                {getActiveFilterCount() > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-yellow-500 text-black rounded-full px-2 py-1 text-xs font-bold min-w-[20px] h-5 flex items-center justify-center">
+                    {getActiveFilterCount()}
+                  </span>
+                )}
               </button>
             </div>
+
+            {/* Active Filters Display */}
+            {getActiveFilterCount() > 0 && (
+              <div className="mb-6 bg-white rounded-lg shadow-sm p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-medium text-gray-900">Active Filters:</h4>
+                  <button
+                    onClick={() => handleFilterChange({})}
+                    className="text-yellow-500 hover:text-yellow-600 text-sm font-medium"
+                  >
+                    Clear All
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {activeFilters.brand && activeFilters.brand.map(brand => (
+                    <span key={brand} className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm">
+                      {brand}
+                      <button
+                        onClick={() => handleFilterChange({
+                          ...activeFilters,
+                          brand: activeFilters.brand.filter(b => b !== brand)
+                        })}
+                        className="hover:text-yellow-900"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                  
+                  {activeFilters.priceRange && (activeFilters.priceRange.min || activeFilters.priceRange.max) && (
+                    <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                      Price: {activeFilters.priceRange.min || 0} - {activeFilters.priceRange.max || '∞'}
+                      <button
+                        onClick={() => handleFilterChange({
+                          ...activeFilters,
+                          priceRange: { min: '', max: '' }
+                        })}
+                        className="hover:text-blue-900"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+                  
+                  {activeFilters.buildYear && (activeFilters.buildYear.min || activeFilters.buildYear.max) && (
+                    <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                      Year: {activeFilters.buildYear.min || '∞'} - {activeFilters.buildYear.max || new Date().getFullYear()}
+                      <button
+                        onClick={() => handleFilterChange({
+                          ...activeFilters,
+                          buildYear: { min: '', max: '' }
+                        })}
+                        className="hover:text-green-900"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  )}
+
+                  {activeFilters.fuelType && activeFilters.fuelType.map(fuel => (
+                    <span key={fuel} className="inline-flex items-center gap-1 bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+                      {fuel}
+                      <button
+                        onClick={() => handleFilterChange({
+                          ...activeFilters,
+                          fuelType: activeFilters.fuelType.filter(f => f !== fuel)
+                        })}
+                        className="hover:text-purple-900"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+
+                  {activeFilters.condition && activeFilters.condition.map(condition => (
+                    <span key={condition} className="inline-flex items-center gap-1 bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">
+                      {condition}
+                      <button
+                        onClick={() => handleFilterChange({
+                          ...activeFilters,
+                          condition: activeFilters.condition.filter(c => c !== condition)
+                        })}
+                        className="hover:text-gray-900"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+
+                  {activeFilters.bodyType && activeFilters.bodyType.map(type => (
+                    <span key={type} className="inline-flex items-center gap-1 bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm">
+                      {type}
+                      <button
+                        onClick={() => handleFilterChange({
+                          ...activeFilters,
+                          bodyType: activeFilters.bodyType.filter(t => t !== type)
+                        })}
+                        className="hover:text-indigo-900"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+
+                  {activeFilters.transmission && activeFilters.transmission.map(trans => (
+                    <span key={trans} className="inline-flex items-center gap-1 bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
+                      {trans}
+                      <button
+                        onClick={() => handleFilterChange({
+                          ...activeFilters,
+                          transmission: activeFilters.transmission.filter(t => t !== trans)
+                        })}
+                        className="hover:text-red-900"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Results Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
@@ -254,6 +453,11 @@ export default function CarsListing() {
                 </h2>
                 <p className="text-gray-600">
                   Showing {indexOfFirstCar + 1}-{Math.min(indexOfLastCar, filteredCars.length)} of {filteredCars.length} results
+                  {getActiveFilterCount() > 0 && (
+                    <span className="ml-2 text-yellow-600 font-medium">
+                      ({getActiveFilterCount()} filters applied)
+                    </span>
+                  )}
                 </p>
                 {searchTerm && filteredCars.length > 0 && (
                   <button
@@ -425,22 +629,43 @@ export default function CarsListing() {
                   <Search className="h-12 w-12 text-gray-400" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {searchTerm ? `No cars found for "${searchTerm}"` : 'No cars found'}
+                  No cars found
                 </h3>
                 <p className="text-gray-600 mb-4">
                   {searchTerm 
-                    ? 'Try searching with different keywords or check your spelling.' 
-                    : 'Try adjusting your filters to see more results.'
+                    ? `No cars match your search "${searchTerm}" with the current filters.` 
+                    : 'No cars match your current filters.'
                   }
                 </p>
-                {searchTerm && (
-                  <button
-                    onClick={clearSearch}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-2 rounded-lg transition-colors"
-                  >
-                    Show All Cars
-                  </button>
-                )}
+                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  {searchTerm && (
+                    <button
+                      onClick={clearSearch}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-2 rounded-lg transition-colors"
+                    >
+                      Clear Search
+                    </button>
+                  )}
+                  {getActiveFilterCount() > 0 && (
+                    <button
+                      onClick={() => handleFilterChange({})}
+                      className="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-6 py-2 rounded-lg transition-colors"
+                    >
+                      Clear All Filters
+                    </button>
+                  )}
+                  {!searchTerm && getActiveFilterCount() === 0 && (
+                    <button
+                      onClick={() => {
+                        setFilteredCars(allCars)
+                        setCurrentPage(1)
+                      }}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-6 py-2 rounded-lg transition-colors"
+                    >
+                      Show All Cars
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
