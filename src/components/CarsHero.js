@@ -24,7 +24,7 @@ export default function CarsHero() {
     }
 
     return (
-        <section className="relative h-[400px] md:h-[500px] overflow-visible mb-16">
+        <section className="relative h-[500px] md:h-[600px] overflow-hidden mb-16">
             {/* Background Image */}
             <div className="absolute inset-0">
                 <Image
