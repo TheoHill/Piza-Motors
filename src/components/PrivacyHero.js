@@ -126,7 +126,7 @@ export default function PolicyHero() {
                                         key={link.name}
                                         href={link.href}
                                         className={`block py-2 text-sm font-medium transition-colors ${link.active
-                                            ? 'text-yellow-500'
+                                            ? 'text-gray-800'
                                             : 'text-gray-800 hover:text-yellow-500'
                                             }`}
                                     >

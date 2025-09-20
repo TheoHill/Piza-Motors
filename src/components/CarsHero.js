@@ -68,7 +68,7 @@ export default function CarsHero() {
                                         key={link.name}
                                         href={link.href}
                                         className={`px-3 py-2 text-sm font-medium transition-colors relative group ${link.active
-                                            ? 'text-yellow-500'
+                                            ? 'text-gray-800'
                                             : 'text-gray-800 hover:text-yellow-500'
                                             }`}
                                     >
