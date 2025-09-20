@@ -24,7 +24,7 @@ export default function AboutHero() {
     }
 
     return (
-        <section className="relative h-[400px] md:h-[500px] overflow-visible mb-16">
+        <section className="relative h-[500px] md:h-[600px] overflow-hidden mb-16">
             {/* Background Image */}
             <div className="absolute inset-0">
                 <Image
@@ -68,7 +68,7 @@ export default function AboutHero() {
                                         key={link.name}
                                         href={link.href}
                                         className={`px-3 py-2 text-sm font-medium transition-colors relative group ${link.active
-                                            ? 'text-yellow-500'
+                                            ? 'text-black-500'
                                             : 'text-gray-800 hover:text-yellow-500'
                                             }`}
                                     >
